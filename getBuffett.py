@@ -2,12 +2,12 @@ import requests
 import json
 import pandas as pd
 
-BC_API_ENDPOINT = "https://api.buffett-code.com/api/v3/quarter"
+BC_API_ENDPOINT = "https://api.buffett-code.com/api/v3/bulk/quarter"
 APIKEY='xz06rapLvG9yPr3g56Jev5g9DNAhJgCU1qi3PL1h'
 
 TICKER="3246"
-fy='2018'
-fg='3'
+FROM='2018Q3'
+TO='2019Q2'
 
 def fetch(ticker=None, start=None, end=None):
     if not ticker:
@@ -20,8 +20,8 @@ def fetch(ticker=None, start=None, end=None):
         url=BC_API_ENDPOINT,
         params={
             "ticker":ticker,
-            "fy":start,
-            "fq":end,
+            "from":start,
+            "to":end,
         },
         headers={
             "x-api-key":APIKEY,
@@ -29,7 +29,14 @@ def fetch(ticker=None, start=None, end=None):
     )
     return response
 
-res = fetch(TICKER, fy, fg)
+res = fetch(TICKER, FROM, TO)
 json_data = json.loads(res.text)
-df = pd.DataFrame.from_dict(json_data['data'])
+df = pd.DataFrame.from_dict(json_data['data']['2018Q3'])
+df2 = pd.DataFrame.from_dict(json_data['data']['2018Q4'])
+df3 = pd.DataFrame.from_dict(json_data['data']['2019Q1'])
+df4 = pd.DataFrame.from_dict(json_data['data']['2019Q2'])
+df = df2.append(df)
+df = df3.append(df)
+df = df4.append(df)
 print(df)
+df.to_csv("./data.csv")
