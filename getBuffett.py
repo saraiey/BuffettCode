@@ -26,20 +26,24 @@ def get_data(tickerslist, fiscalslist):
     for ticker in tickerslist["ticker"]:
         for fy in fiscalslist["fiscal_year"]:
             for fq in ["1", "2", "3", "4"]:
-                response = requests.get(
-                    url = BC_API_ENDPOINT,
-                    params = {
-                        "ticker":ticker,
-                        "fy":fy,
-                        "fq":fq
-                    },
-                    headers = {
-                        "x-api-key":APIKEY
-                    }
-                )
-                json_df = json.loads(response.text)
-                df1 = pd.DataFrame.from_dict(json_df['data'])
-                df = df.append(df1)
+                try:
+                    response = requests.get(
+                        url = BC_API_ENDPOINT,
+                        params = {
+                            "ticker":ticker,
+                            "fy":fy,
+                            "fq":fq
+                        },
+                        headers = {
+                            "x-api-key":APIKEY
+                        }
+                    )
+                    json_df = json.loads(response.text)
+                    df1 = pd.DataFrame.from_dict(json_df['data'])
+                    # df = df.append(df1)
+                    df = pd.concat([df, df1])
+                except Exception:
+                    print(ticker + "の" + fy + "年第" + fq + "四半期のデータはありません。")
     return df
 
 def create_data(df):
