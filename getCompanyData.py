@@ -14,8 +14,10 @@ def read_ticker():
     tickers.close
     return tickerslist
 
+# データを作成する
 def get_data(tickerslist):
     df = pd.DataFrame()
+    # 該当企業tickerを
     for ticker in tickerslist["ticker"]:
         try:
             response = requests.get(
